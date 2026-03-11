@@ -1,7 +1,9 @@
-import React from 'react'
-
+import React, { useRef, useState } from "react"
 import { motion, useInView } from "framer-motion"
-import { useRef, useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import useStore from "../store/useStore"
 
 const contactDetails = [
   {
@@ -30,6 +32,14 @@ const contactDetails = [
   },
 ]
 
+// Zod schema
+const contactSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  subject: z.string().min(5, "Subject must be at least 5 characters"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+})
+
 function FadeIn({ children, delay = 0, direction = "up" }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: "-60px" })
@@ -50,32 +60,32 @@ function FadeIn({ children, delay = 0, direction = "up" }) {
 }
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  })
+  const { isDark } = useStore()
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  function handleChange(e) {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(contactSchema),
+  })
 
-  function handleSubmit(e) {
-    e.preventDefault()
+  const onSubmit = async (data) => {
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      setSubmitted(true)
-      setFormData({ name: "", email: "", subject: "", message: "" })
-      setTimeout(() => setSubmitted(false), 4000)
-    }, 1500)
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    console.log("Form data:", data)
+    setLoading(false)
+    setSubmitted(true)
+    reset()
+    setTimeout(() => setSubmitted(false), 4000)
   }
 
   return (
-    <section id="contact" className="py-24 px-6 bg-slate-900">
+    <section id="contact" className={`py-24 px-6 transition-colors duration-300 ${isDark ? "bg-slate-900" : "bg-slate-900"}`}>
       <div className="max-w-6xl mx-auto">
 
         <div className="grid md:grid-cols-2 gap-16 items-start">
@@ -100,9 +110,7 @@ export default function Contact() {
 
             <FadeIn delay={0.3}>
               <p className="text-slate-400 text-base leading-relaxed font-light mb-10">
-                Open to remote full-time roles, part-time contracts, and
-                freelance projects. If you have an opportunity or just want
-                to say hi — my inbox is always open.
+                Open to remote full-time roles, part-time contracts, and freelance projects. If you have an opportunity or just want to say hi — my inbox is always open.
               </p>
             </FadeIn>
 
@@ -115,20 +123,13 @@ export default function Contact() {
                       href={item.href}
                       target={item.href.startsWith("http") ? "_blank" : undefined}
                       rel="noreferrer"
-                      className="flex items-center gap-4 p-4 bg-white/5
-                                 border border-white/10 rounded-2xl
-                                 hover:bg-blue-600/10 hover:border-blue-500/30
-                                 hover:translate-x-1 transition-all duration-300
-                                 group cursor-pointer"
+                      className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-blue-600/10 hover:border-blue-500/30 hover:translate-x-1 transition-all duration-300 group cursor-pointer"
                     >
-                      <span className="text-xl w-10 h-10 flex items-center
-                                       justify-center bg-white/5 rounded-xl
-                                       group-hover:bg-blue-600/20 transition-colors duration-200">
+                      <span className="text-xl w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl group-hover:bg-blue-600/20 transition-colors duration-200">
                         {item.icon}
                       </span>
                       <div>
-                        <div className="text-xs text-slate-500 uppercase
-                                        tracking-widest font-mono font-semibold mb-0.5">
+                        <div className="text-xs text-slate-500 uppercase tracking-widest font-mono font-semibold mb-0.5">
                           {item.label}
                         </div>
                         <div className="text-sm font-semibold text-white">
@@ -137,15 +138,12 @@ export default function Contact() {
                       </div>
                     </a>
                   ) : (
-                    <div className="flex items-center gap-4 p-4 bg-white/5
-                                    border border-white/10 rounded-2xl">
-                      <span className="text-xl w-10 h-10 flex items-center
-                                       justify-center bg-white/5 rounded-xl">
+                    <div className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl">
+                      <span className="text-xl w-10 h-10 flex items-center justify-center bg-white/5 rounded-xl">
                         {item.icon}
                       </span>
                       <div>
-                        <div className="text-xs text-slate-500 uppercase
-                                        tracking-widest font-mono font-semibold mb-0.5">
+                        <div className="text-xs text-slate-500 uppercase tracking-widest font-mono font-semibold mb-0.5">
                           {item.label}
                         </div>
                         <div className="text-sm font-semibold text-white">
@@ -170,122 +168,92 @@ export default function Contact() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="flex flex-col items-center justify-center
-                             py-16 text-center gap-4"
+                  className="flex flex-col items-center justify-center py-16 text-center gap-4"
                 >
                   <span className="text-5xl">🎉</span>
-                  <h4 className="text-white font-bold text-lg">
-                    Message Sent!
-                  </h4>
+                  <h4 className="text-white font-bold text-lg">Message Sent!</h4>
                   <p className="text-slate-400 text-sm font-light">
                     Thank you for reaching out. I'll get back to you soon.
                   </p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
 
                   {/* Name + Email row */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex flex-col gap-2">
-                      <label className="text-xs font-semibold text-slate-400
-                                        uppercase tracking-widest font-mono">
+                      <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest font-mono">
                         Name
                       </label>
                       <input
                         type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
+                        {...register("name")}
                         placeholder="John Doe"
-                        required
-                        className="bg-white/5 border border-white/10 rounded-xl
-                                   px-4 py-3 text-white text-sm placeholder-slate-600
-                                   outline-none focus:border-blue-500
-                                   focus:bg-blue-600/5 transition-all duration-200
-                                   font-light"
+                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-600 outline-none focus:border-blue-500 focus:bg-blue-600/5 transition-all duration-200 font-light"
                       />
+                      {errors.name && (
+                        <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>
+                      )}
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label className="text-xs font-semibold text-slate-400
-                                        uppercase tracking-widest font-mono">
+                      <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest font-mono">
                         Email
                       </label>
                       <input
                         type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
+                        {...register("email")}
                         placeholder="john@company.com"
-                        required
-                        className="bg-white/5 border border-white/10 rounded-xl
-                                   px-4 py-3 text-white text-sm placeholder-slate-600
-                                   outline-none focus:border-blue-500
-                                   focus:bg-blue-600/5 transition-all duration-200
-                                   font-light"
+                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-600 outline-none focus:border-blue-500 focus:bg-blue-600/5 transition-all duration-200 font-light"
                       />
+                      {errors.email && (
+                        <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
+                      )}
                     </div>
                   </div>
 
                   {/* Subject */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-xs font-semibold text-slate-400
-                                      uppercase tracking-widest font-mono">
+                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest font-mono">
                       Subject
                     </label>
                     <input
                       type="text"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
+                      {...register("subject")}
                       placeholder="Remote Developer Role / Project Collaboration"
-                      required
-                      className="bg-white/5 border border-white/10 rounded-xl
-                                 px-4 py-3 text-white text-sm placeholder-slate-600
-                                 outline-none focus:border-blue-500
-                                 focus:bg-blue-600/5 transition-all duration-200
-                                 font-light"
+                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-600 outline-none focus:border-blue-500 focus:bg-blue-600/5 transition-all duration-200 font-light"
                     />
+                    {errors.subject && (
+                      <p className="text-xs text-red-400 mt-1">{errors.subject.message}</p>
+                    )}
                   </div>
 
                   {/* Message */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-xs font-semibold text-slate-400
-                                      uppercase tracking-widest font-mono">
+                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest font-mono">
                       Message
                     </label>
                     <textarea
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
+                      {...register("message")}
                       placeholder="Tell me about your project or opportunity..."
-                      required
                       rows={5}
-                      className="bg-white/5 border border-white/10 rounded-xl
-                                 px-4 py-3 text-white text-sm placeholder-slate-600
-                                 outline-none focus:border-blue-500
-                                 focus:bg-blue-600/5 transition-all duration-200
-                                 font-light resize-none"
+                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-600 outline-none focus:border-blue-500 focus:bg-blue-600/5 transition-all duration-200 font-light resize-none"
                     />
+                    {errors.message && (
+                      <p className="text-xs text-red-400 mt-1">{errors.message.message}</p>
+                    )}
                   </div>
 
                   {/* Submit */}
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full flex items-center justify-center gap-2
-                               bg-blue-600 text-white font-semibold text-sm
-                               py-3.5 rounded-xl hover:bg-blue-700
-                               disabled:opacity-70 disabled:cursor-not-allowed
-                               transition-all duration-200 hover:-translate-y-0.5
-                               shadow-lg shadow-blue-900/30 mt-2"
+                    className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold text-sm py-3.5 rounded-xl hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 hover:-translate-y-0.5 shadow-lg shadow-blue-900/30 mt-2"
                   >
                     {loading ? (
                       <>
                         <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                          <circle className="opacity-25" cx="12" cy="12" r="10"
-                            stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8v8z" />
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                         </svg>
                         <span>Sending...</span>
                       </>

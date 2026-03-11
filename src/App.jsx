@@ -1,36 +1,44 @@
-
-import React, { useEffect } from 'react'
-import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import About from './components/About'
-import Skills from './components/Skills'
-import Projects from './components/Projects'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
-import useStore from './store/useStore'
+import React, { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import Navbar from "./components/Navbar"
+import Hero from "./components/Hero"
+import About from "./components/About"
+import Skills from "./components/Skills"
+import Projects from "./components/Projects"
+import Contact from "./components/Contact"
+import LoadingScreen from "./components/LoadingScreen"
 
 function App() {
-
-  const isDark = useStore((state) => state.isDark)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
-  }, [isDark])
+    const timer = setTimeout(() => setLoading(false), 2500)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
-    <main className="font-sans bg-white text-slate-900">
-      <Navbar />
-      <Hero />
-      <About/>
-      <Skills/>
-      <Projects/>
-      <Contact/>
-      <useStore/>
-      <Footer/>
-    </main>
+    <>
+      <AnimatePresence mode="wait">
+        {loading && <LoadingScreen key="loading" />}
+      </AnimatePresence>
+
+      {!loading && (
+        <motion.div
+          key="main"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="min-h-screen"
+        >
+          <Navbar />
+          <Hero />
+          <About />
+          <Skills />
+          <Projects />
+          <Contact />
+        </motion.div>
+      )}
+    </>
   )
 }
 
