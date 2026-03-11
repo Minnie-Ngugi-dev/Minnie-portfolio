@@ -6,11 +6,11 @@ import { motion, AnimatePresence } from "framer-motion"
 import useStore from "../store/useStore"
 
 const links = [
-  { label: "Home",     to: "home",     icon: Home,        num: "01" },
-  { label: "About",    to: "about",    icon: User,        num: "02" },
-  { label: "Skills",   to: "skills",   icon: Zap,         num: "03" },
-  { label: "Projects", to: "projects", icon: FolderGit2,  num: "04" },
-  { label: "Contact",  to: "contact",  icon: Mail,        num: "05" },
+  { label: "Home",     to: "home",     icon: Home,         },
+  { label: "About",    to: "about",    icon: User,         },
+  { label: "Skills",   to: "skills",   icon: Zap,          },
+  { label: "Projects", to: "projects", icon: FolderGit2,  },
+  { label: "Contact",  to: "contact",  icon: Mail,       },
 ]
 
 export default function Navbar() {

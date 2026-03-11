@@ -1,6 +1,4 @@
-import React from 'react'
-
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { motion, useInView, useMotionValue, useSpring } from "framer-motion"
 import { ArrowDown, ArrowRight, MapPin, Download } from "lucide-react"
 import { Link } from "react-scroll"
@@ -120,7 +118,7 @@ export default function Hero() {
         {/* ══ LEFT ══════════════════════════════════ */}
         <div>
 
-          {/* Available badge */}
+          {/* Available badge - made generic */}
           <motion.div {...fadeUp(0.1)}>
             <div className={`inline-flex items-center gap-2.5 text-xs font-semibold
                              uppercase tracking-widest px-4 py-2 rounded-full mb-8
@@ -135,12 +133,12 @@ export default function Hero() {
                 <span className="relative inline-flex rounded-full w-2 h-2
                                  bg-green-500" />
               </span>
-              Available for Remote Work
+              Open to Opportunities
               <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold
                 ${isDark
                   ? "bg-green-500/20 text-green-400"
                   : "bg-green-100 text-green-700"}`}>
-                2025
+                2026
               </span>
             </div>
           </motion.div>
@@ -162,7 +160,7 @@ export default function Hero() {
             </h1>
           </motion.div>
 
-          {/* Typewriter title */}
+          {/* Typewriter title - removed remote-specific */}
           <motion.div {...fadeUp(0.3)}
             className="flex items-center gap-2 mb-6">
             <span className={`font-mono text-xs tracking-widest uppercase
@@ -178,7 +176,7 @@ export default function Hero() {
                     "MERN Stack Engineer",
                     "Laravel Developer",
                     "React Native Builder",
-                    "Remote-Ready · Nairobi 🇰🇪",
+                    "Based in Nairobi 🇰🇪",
                   ],
                   autoStart: true,
                   loop: true,
@@ -189,7 +187,7 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Description */}
+          {/* Description - removed "remote opportunities worldwide" */}
           <motion.p {...fadeUp(0.4)}
             className={`text-base leading-relaxed max-w-md mb-10 font-light
               ${isDark ? "text-slate-400" : "text-slate-500"}`}>
@@ -204,8 +202,8 @@ export default function Hero() {
               ${isDark ? "text-white" : "text-slate-800"}`}>
               <MapPin size={12} className="text-blue-500" />
               Nairobi, Kenya
-            </span>{" "}
-            and open to remote opportunities worldwide.
+            </span>
+            , I'm ready to contribute to your next project.
           </motion.p>
 
           {/* Buttons */}
@@ -331,7 +329,7 @@ export default function Hero() {
                             border-blue-500 rounded-br-lg opacity-60" />
           </div>
 
-          {/* Floating stat cards */}
+          {/* Floating stat cards - updated last label */}
           <FloatCard
             emoji="🚀"
             value={6}
@@ -361,9 +359,9 @@ export default function Hero() {
           />
           <FloatCard
             emoji="🌍"
-            value="Remote"
+            value="Open"
             suffix=""
-            label="Ready Worldwide"
+            label="To Work"
             delay={1.5}
             position="-top-2 left-4"
             isDark={isDark}
